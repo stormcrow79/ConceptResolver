@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<for:dataContainer xmlns:for="http://www.aduroalliance.com/aduroforms/1.1/formsession">
+	<for1:formMetaData
+		xmlns:for1="http://www.aduroalliance.com/aduroforms/1.1/formInstanceMeta">
+		<for1:formInstanceId>null</for1:formInstanceId>
+		<for1:formInstanceVersion>1.0</for1:formInstanceVersion>
+		<for1:formInstanceCreationTimeStamp>2023-08-21T16:16:55</for1:formInstanceCreationTimeStamp>
+		<for1:formInstanceOperationMode>N</for1:formInstanceOperationMode>
+		<for1:formInstanceDescription>Primary Health Tasmania Hospitals</for1:formInstanceDescription>
+		<for1:formDefinitionId>phtasref</for1:formDefinitionId>
+		<for1:formDefinitionVersion>1.0</for1:formDefinitionVersion>
+		<for1:formDefinitionDescription>Primary Health Tasmania Hospitals</for1:formDefinitionDescription>
+		<for1:formDefinitionTitle>Primary Health Tasmania Hospitals</for1:formDefinitionTitle>
+		<for1:recipientAccount>null</for1:recipientAccount>
+	</for1:formMetaData>
+	<for1:submittedData
+		xmlns:for1="http://www.hiso.govt.nz/10014.2/1.0/formInstanceMeta">
+		<html>
+			<body>
+				<table>
+					<tr>
+						<td conceptName="Patient_FamilyName"
+							conceptID="554:1000111/1000400/2"
+							name="patient.familyName" />
+
+						<td conceptName="Patient_PostalAddress_StreetName"
+							conceptID="554:1000111/1000400/3"
+							name="patient.postal.streetAddress" />
+					</tr>
+					<tr>
+						<th>Patient_LaboratoryReport_SendingFacility</th>
+						<th>Patient_LaboratoryReport_Subject</th>
+						<th>Patient_LaboratoryReport_Name</th>
+						<th>Patient_LaboratoryReport_DateReceived</th>
+						<th>Patient_LaboratoryReport_DataType</th>
+						<th>Patient_LaboratoryReport_Comments</th>
+						<th>Patient_LaboratoryReport_Size</th>
+						<th>Patient_LaboratoryReport_Type</th>
+					</tr>
+					<tr conceptID="554:1000111/1000450"
+						conceptName="Patient_LaboratoryReport"
+						maxDateTime="2015-09-02T23:59:59.999"
+						minDateTime="2012-09-16T00:00:00.000"
+						name="clinical.diagnosticReport" order="dateDescend"
+						referenceID="2013-09-02T12:00:36.000"
+						searchString="Patient Loinc Test Results Ful">
+
+						<td conceptID="554:1000111/1000450/2"
+							conceptName="Patient_LaboratoryReport_SendingFacility"
+							name="sendingFacility" />
+						<td conceptID="554:1000111/1000450/3"
+							conceptName="Patient_LaboratoryReport_Subject" name="name" />
+						<td conceptID="554:1000111/1000450/17"
+							conceptName="Patient_LaboratoryReport_Name" name="subject" />
+						<td conceptID="554:1000111/1000450/1"
+							conceptName="Patient_LaboratoryReport_DateReceived"
+							name="date" />
+						<td conceptID="554:1000111/1000450/15"
+							conceptName="Patient_LaboratoryReport_DataType" name="type" />
+						<td conceptID="554:1000111/1000450/27"
+							conceptName="Patient_LaboratoryReport_Comments"
+							name="comments" />
+						<td conceptID="554:1000111/1000450/16"
+							conceptName="Patient_LaboratoryReport_Size" name="size" />
+						<td conceptID="554:1000111/1000450/6"
+							conceptName="Patient_LaboratoryReport_Type"
+							name="documentType" />
+					</tr>
+				</table>
+			</body>
+		</html>
+	</for1:submittedData>
+</for:dataContainer>
