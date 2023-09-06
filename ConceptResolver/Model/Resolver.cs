@@ -26,7 +26,7 @@ namespace ConceptResolver.Model
                     .Where(a => a != null);
 
                 foreach (var concept in concepts)
-                    conceptProviders.Add(concept.Name, providerType);
+                    providerTypes.Add(concept.Name, providerType);
             }
 
             var collectionProviders = typeof(Program).Assembly.GetTypes()
@@ -37,15 +37,21 @@ namespace ConceptResolver.Model
             {
                 var concept = providerType.GetCustomAttribute<ConceptAttribute>();
                 if (concept != null)
-                    conceptProviders.Add(concept.Name, providerType);
+                    providerTypes.Add(concept.Name, providerType);
             }
         }
 
         public object GetProvider(string conceptName)
         {
-            if (conceptProviders.TryGetValue(conceptName, out var providerType))
-                return providerType.GetConstructor(new Type[0]).Invoke(new object[0]);
-            return null;
+            if (!providerTypes.TryGetValue(conceptName, out var providerType))
+                return null;
+
+            if (providers.TryGetValue(providerType, out var providerInstance))
+                return providerInstance;
+
+            providerInstance = providerType.GetConstructor(new Type[0]).Invoke(new object[0]);
+            providers.Add(providerType, providerInstance);
+            return providerInstance;
         }
 
         public Filter ParseFilter(XmlElement element)
@@ -103,10 +109,11 @@ namespace ConceptResolver.Model
 
         public void Dump()
         {
-            foreach (var entry in conceptProviders)
+            foreach (var entry in providerTypes)
                 Console.WriteLine($"{entry.Key}: {entry.Value.Name}");
         }
 
-        private Dictionary<string, Type> conceptProviders { get; } = new Dictionary<string, Type>();
+        private Dictionary<string, Type> providerTypes { get; } = new Dictionary<string, Type>();
+        private Dictionary<Type, object> providers { get; } = new Dictionary<Type, object>();
     }
 }
