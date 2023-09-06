@@ -61,7 +61,6 @@ namespace ConceptResolver.Model
 
         public void Replace(XmlElement element)
         {
-            var processChildElements = true;
             var conceptName = element.GetAttribute("conceptName");
             var provider = GetProvider(conceptName);
             if (provider != null)
@@ -83,20 +82,16 @@ namespace ConceptResolver.Model
                     // process those recursively, but with using the specified member
                     foreach (var value in providerType.GetMethod("Get").Invoke(provider, new object[] { filter }) as IEnumerable)
                     {
-                        var clone = element.ParentNode.AppendChild(element.Clone());
+                        var clone = element.ParentNode.AppendChild(element.Clone()) as XmlElement;
                         // TODO: process children
                     }
 
-                    // skip processing child elements using the default method
-                    processChildElements = false;
+                    element.ParentNode.RemoveChild(element);
                 }
             }
 
-            if (processChildElements)
-            {
-                foreach (var child in element.ChildNodes.OfType<XmlElement>())
-                    Replace(child);
-            }
+            foreach (var child in element.ChildNodes.OfType<XmlElement>())
+                Replace(child);
         }
 
         public object GetConceptValue(object model, string conceptName) => model.GetType().GetProperties()
