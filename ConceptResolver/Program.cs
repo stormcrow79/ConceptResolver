@@ -24,11 +24,17 @@ namespace ConceptResolver
             _resolver.Dump();
 
             // test a sample replacement
+            var session = new Session
+            {
+                PatientId = 1111,
+                UserId = 9999
+            };
+
             var template = new XmlDocument();
             template.Load(args[0]);
 
             var output = template.Clone() as XmlDocument;
-            _resolver.Replace(output.DocumentElement);
+            _resolver.Replace(session, output.DocumentElement);
 
             output.Save(Path.ChangeExtension(args[0], ".out.xml"));
         }

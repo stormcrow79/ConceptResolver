@@ -13,6 +13,13 @@ namespace ConceptResolver.Model
         }
     }
 
+    public class Session
+    {
+        public int PatientId { get; set; }
+        public int EncounterId { get; set; }
+        public int UserId { get; set; }
+    }
+
     public class Filter
     {
         public DateTime? MinDateTime { get; set; }
@@ -20,11 +27,11 @@ namespace ConceptResolver.Model
 
     public interface IProvider<TModel>
     {
-        TModel Get();
+        TModel Get(Session session);
     }
 
     public interface ICollectionProvider<TModel>
     {
-        IEnumerable<TModel> Get(Filter filter);
+        IEnumerable<TModel> Get(Session session, Filter filter);
     }
 }

@@ -65,7 +65,7 @@ namespace ConceptResolver.Model
             return filter;
         }
 
-        public void Replace(XmlElement element)
+        public void Replace(Session session, XmlElement element)
         {
             var conceptName = element.GetAttribute("conceptName");
             var provider = GetProvider(conceptName);
@@ -75,7 +75,7 @@ namespace ConceptResolver.Model
 
                 if (Implements(providerType, typeof(IProvider<>)))
                 {
-                    var model = providerType.GetMethod("Get").Invoke(provider, new object[0]);
+                    var model = providerType.GetMethod("Get").Invoke(provider, new object[] { session });
                     element.InnerText = GetConceptValue(model, conceptName).ToString();
                 }
 
@@ -86,7 +86,7 @@ namespace ConceptResolver.Model
 
                     // clone the XmlElement for each member of the collection and
                     // process those recursively, but with using the specified member
-                    foreach (var value in providerType.GetMethod("Get").Invoke(provider, new object[] { filter }) as IEnumerable)
+                    foreach (var value in providerType.GetMethod("Get").Invoke(provider, new object[] { session, filter }) as IEnumerable)
                     {
                         var clone = element.ParentNode.AppendChild(element.Clone()) as XmlElement;
                         // TODO: process children
@@ -97,7 +97,7 @@ namespace ConceptResolver.Model
             }
 
             foreach (var child in element.ChildNodes.OfType<XmlElement>())
-                Replace(child);
+                Replace(session, child);
         }
 
         public object GetConceptValue(object model, string conceptName) => model.GetType().GetProperties()
