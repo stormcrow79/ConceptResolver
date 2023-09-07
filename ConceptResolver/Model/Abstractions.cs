@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace ConceptResolver.Model
 {
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
     public class ConceptAttribute : Attribute
     {
         public string Name { get; set; }
