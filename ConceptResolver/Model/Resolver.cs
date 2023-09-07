@@ -10,48 +10,36 @@ namespace ConceptResolver.Model
 {
     public class Resolver
     {
-        public Resolver()
+        public Resolver(IEnumerable<IProvider> providers)
         {
-            var singletonProviders = typeof(Program).Assembly.GetTypes()
-                .Where(t => t.GetInterface("IProvider`1") != null)
-                .ToArray();
-
-            foreach (var providerType in singletonProviders)
+            foreach (var provider in providers)
             {
-                var model = providerType.GetInterface("IProvider`1")
-                    .GetGenericArguments()[0];
+                var providerType = provider.GetType();
+                if (Implements(provider, typeof(IProvider<>)))
+                {
+                    var model = providerType.GetInterface(typeof(IProvider<>).Name).GetGenericArguments()[0];
 
-                var concepts = model.GetProperties()
-                    .Select(p => p.GetCustomAttribute<ConceptAttribute>())
-                    .Where(a => a != null);
+                    var concepts = model.GetProperties()
+                        .Select(p => p.GetCustomAttribute<ConceptAttribute>())
+                        .Where(a => a != null);
 
-                foreach (var concept in concepts)
-                    providerTypes.Add(concept.Name, providerType);
-            }
-
-            var collectionProviders = typeof(Program).Assembly.GetTypes()
-                .Where(t => t.GetInterface("ICollectionProvider`1") != null)
-                .ToArray();
-
-            foreach (var providerType in collectionProviders)
-            {
-                var concept = providerType.GetCustomAttribute<ConceptAttribute>();
-                if (concept != null)
-                    providerTypes.Add(concept.Name, providerType);
+                    foreach (var concept in concepts)
+                        providerLookup.Add(concept.Name, provider);
+                }
+                else if (Implements(provider, typeof(ICollectionProvider<>)))
+                {
+                    var concept = providerType.GetCustomAttribute<ConceptAttribute>();
+                    if (concept != null)
+                        providerLookup.Add(concept.Name, provider);
+                }
             }
         }
 
         public object GetProvider(string conceptName)
         {
-            if (!providerTypes.TryGetValue(conceptName, out var providerType))
-                return null;
-
-            if (providers.TryGetValue(providerType, out var providerInstance))
-                return providerInstance;
-
-            providerInstance = providerType.GetConstructor(new Type[0]).Invoke(new object[0]);
-            providers.Add(providerType, providerInstance);
-            return providerInstance;
+            if (providerLookup.TryGetValue(conceptName, out var provider))
+                return provider;
+            return null;
         }
 
         public Filter ParseFilter(XmlElement element)
@@ -104,16 +92,17 @@ namespace ConceptResolver.Model
             .FirstOrDefault(p => p.GetCustomAttribute<ConceptAttribute>()?.Name == conceptName)?
             .GetValue(model);
 
+        public bool Implements(object instance, Type interfaceType) => Implements(instance.GetType(), interfaceType);
+
         public bool Implements(Type concreteType, Type interfaceType) => concreteType.GetInterfaces()
             .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == interfaceType);
 
         public void Dump()
         {
-            foreach (var entry in providerTypes)
-                Console.WriteLine($"{entry.Key}: {entry.Value.Name}");
+            foreach (var entry in providerLookup)
+                Console.WriteLine($"{entry.Key}: {entry.Value.GetType().Name}");
         }
 
-        private Dictionary<string, Type> providerTypes { get; } = new Dictionary<string, Type>();
-        private Dictionary<Type, object> providers { get; } = new Dictionary<Type, object>();
+        private Dictionary<string, object> providerLookup { get; } = new Dictionary<string, object>();
     }
 }

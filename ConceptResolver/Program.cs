@@ -17,8 +17,8 @@ namespace ConceptResolver
                 .ConfigureServices(ConfigureServices)
                 .Build();
 
-            var app = host.Services.GetRequiredService<Application>();
-            await app.Run();
+            host.Services.GetRequiredService<Resolver>().Dump();
+            await host.Services.GetRequiredService<Application>().Run();
         }
 
         private static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
