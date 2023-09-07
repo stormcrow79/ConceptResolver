@@ -25,13 +25,15 @@ namespace ConceptResolver.Model
         public DateTime? MinDateTime { get; set; }
     }
 
-    public interface IProvider<TModel>
+    public interface IProvider<TModel> : IProvider
     {
         TModel Get(Session session);
     }
 
-    public interface ICollectionProvider<TModel>
+    public interface ICollectionProvider<TModel> : IProvider
     {
         IEnumerable<TModel> Get(Session session, Filter filter);
     }
+
+    public interface IProvider { }
 }

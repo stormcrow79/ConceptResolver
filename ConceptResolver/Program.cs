@@ -1,6 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
+using System.Threading.Tasks;
 using System.Xml;
+
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 using ConceptResolver.Model;
 
@@ -8,21 +11,41 @@ namespace ConceptResolver
 {
     internal class Program
     {
-        static Resolver _resolver;
-
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
+            var host = Host.CreateDefaultBuilder(args)
+                .ConfigureServices(ConfigureServices)
+                .Build();
 
-            if (args.Length == 0)
-            {
-                Console.WriteLine("usage: ReflectionText.exe <xml_filename>");
-                return;
-            }
+            var app = host.Services.GetRequiredService<Application>();
+            await app.Run();
+        }
 
-            // set up & test the resolver
-            _resolver = new Resolver();
-            _resolver.Dump();
+        private static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
+        {
+            services.AddScoped<IProvider, PatientProvider>();
+            services.AddScoped<IProvider, LabResultProvider>();
 
+            services.AddScoped<Resolver>();
+
+            services.AddTransient<Application>();
+        }
+    }
+
+    internal class Application
+    {
+        public Application(Resolver resolver)
+        {
+            this.resolver = resolver;
+        }
+
+        public async Task Run()
+        {
+            await HandleRequest(@"C:\Git\ConceptResolver\ConceptResolver\bin\Debug\request.xml");
+        }
+
+        public async Task HandleRequest(string filename)
+        {
             // test a sample replacement
             var session = new Session
             {
@@ -31,12 +54,14 @@ namespace ConceptResolver
             };
 
             var template = new XmlDocument();
-            template.Load(args[0]);
+            template.Load(filename);
 
             var output = template.Clone() as XmlDocument;
-            _resolver.Replace(session, output.DocumentElement);
+            resolver.Replace(session, output.DocumentElement);
 
-            output.Save(Path.ChangeExtension(args[0], ".out.xml"));
+            output.Save(Path.ChangeExtension(filename, ".out.xml"));
         }
+
+        private readonly Resolver resolver;
     }
 }
