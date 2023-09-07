@@ -15,7 +15,7 @@ namespace ConceptResolver.Model
             foreach (var provider in providers)
             {
                 var providerType = provider.GetType();
-                if (Implements(provider, typeof(IProvider<>)))
+                if (Implements(providerType, typeof(IProvider<>)))
                 {
                     var model = providerType.GetInterface(typeof(IProvider<>).Name).GetGenericArguments()[0];
 
@@ -26,7 +26,7 @@ namespace ConceptResolver.Model
                     foreach (var concept in concepts)
                         providerLookup.Add(concept.Name, provider);
                 }
-                else if (Implements(provider, typeof(ICollectionProvider<>)))
+                else if (Implements(providerType, typeof(ICollectionProvider<>)))
                 {
                     var concept = providerType.GetCustomAttribute<ConceptAttribute>();
                     if (concept != null)
@@ -91,8 +91,6 @@ namespace ConceptResolver.Model
         public object GetConceptValue(object model, string conceptName) => model.GetType().GetProperties()
             .FirstOrDefault(p => p.GetCustomAttribute<ConceptAttribute>()?.Name == conceptName)?
             .GetValue(model);
-
-        public bool Implements(object instance, Type interfaceType) => Implements(instance.GetType(), interfaceType);
 
         public bool Implements(Type concreteType, Type interfaceType) => concreteType.GetInterfaces()
             .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == interfaceType);
